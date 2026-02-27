@@ -1,18 +1,32 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
+import type { UploadResponse, FileMetadata } from './types';
 import FileUpload from './components/FileUpload';
+import AnalysisScreen from './components/AnalysisScreen';
 import InputBar from './components/InputBar';
-import { healthCheck } from './services/api';
 
 export default function App() {
-  useEffect(() => {
-    healthCheck()
-      .then((res) => console.log('Health check:', res.data))
-      .catch((err) => console.error('Health check failed:', err));
-  }, []);
+  const [fileMetadata, setFileMetadata] = useState<FileMetadata | null>(null);
+
+  function handleUploadSuccess(data: UploadResponse) {
+    setFileMetadata({
+      filename: data.filename,
+      rows: data.rows,
+      columns: data.columns,
+      column_info: data.column_info,
+    });
+  }
+
+  function handleUploadNew() {
+    setFileMetadata(null);
+  }
+
+  if (fileMetadata) {
+    return <AnalysisScreen fileMetadata={fileMetadata} onUploadNew={handleUploadNew} />;
+  }
 
   return (
     <div className="bg-background-upload min-h-screen flex flex-col items-center justify-center p-4 relative pb-28">
-      <FileUpload onUploadSuccess={() => {}} />
+      <FileUpload onUploadSuccess={handleUploadSuccess} />
       <InputBar disabled={true} />
     </div>
   );

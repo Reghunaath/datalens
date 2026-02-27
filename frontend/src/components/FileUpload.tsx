@@ -1,11 +1,15 @@
 import { useState, useRef, useCallback } from 'react';
+import type { UploadResponse } from '../types';
+import { uploadFile } from '../services/api';
+import axios from 'axios';
 
 interface FileUploadProps {
-  onUploadSuccess: (data: import('../types').UploadResponse) => void;
+  onUploadSuccess: (data: UploadResponse) => void;
 }
 
-export default function FileUpload({ onUploadSuccess: _onUploadSuccess }: FileUploadProps) {
+export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -31,7 +35,7 @@ export default function FileUpload({ onUploadSuccess: _onUploadSuccess }: FileUp
     if (file) validateAndUpload(file);
   }, []);
 
-  function validateAndUpload(file: File) {
+  async function validateAndUpload(file: File) {
     setError(null);
     if (!file.name.toLowerCase().endsWith('.csv')) {
       setError('Please upload a CSV file.');
@@ -41,8 +45,21 @@ export default function FileUpload({ onUploadSuccess: _onUploadSuccess }: FileUp
       setError('File size exceeds the 10MB limit.');
       return;
     }
-    // Upload will be wired in Step 3
-    void file;
+
+    setIsUploading(true);
+    try {
+      const res = await uploadFile(file);
+      onUploadSuccess(res.data);
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Something went wrong uploading the file. Please try again.');
+      }
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   }
 
   return (
@@ -66,31 +83,46 @@ export default function FileUpload({ onUploadSuccess: _onUploadSuccess }: FileUp
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
           className={`w-full rounded-xl border-2 border-dashed ${
-            isDragging ? 'border-primary bg-[#1f2636]' : 'border-slate-700 bg-[#1a202e] hover:border-primary hover:bg-[#1f2636]'
+            isUploading
+              ? 'border-primary/50 bg-[#1f2636] pointer-events-none'
+              : isDragging
+                ? 'border-primary bg-[#1f2636]'
+                : 'border-slate-700 bg-[#1a202e] hover:border-primary hover:bg-[#1f2636]'
           } transition-all duration-200 ease-in-out cursor-pointer py-16 px-8 flex flex-col items-center gap-6`}
         >
-          <div className={`w-16 h-16 rounded-full bg-[#282e39] flex items-center justify-center text-slate-400 ${isDragging ? 'scale-110' : 'group-hover:scale-110'} transition-transform duration-200`}>
-            <span className="material-symbols-outlined text-3xl">cloud_upload</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <p className="text-white text-lg font-bold">
-              Drag and drop your CSV here
-            </p>
-            <p className="text-slate-400 text-sm">or</p>
-          </div>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              fileInputRef.current?.click();
-            }}
-            className="flex items-center gap-2 h-10 px-6 rounded-full bg-primary hover:bg-blue-600 text-white text-sm font-semibold tracking-wide transition-colors shadow-lg shadow-primary/20 cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-[18px]">folder_open</span>
-            <span>Browse files</span>
-          </button>
+          {isUploading ? (
+            <>
+              <div className="w-16 h-16 rounded-full bg-[#282e39] flex items-center justify-center text-primary animate-pulse">
+                <span className="material-symbols-outlined text-3xl">hourglass_top</span>
+              </div>
+              <p className="text-slate-300 text-lg font-bold">Uploading...</p>
+            </>
+          ) : (
+            <>
+              <div className={`w-16 h-16 rounded-full bg-[#282e39] flex items-center justify-center text-slate-400 ${isDragging ? 'scale-110' : 'group-hover:scale-110'} transition-transform duration-200`}>
+                <span className="material-symbols-outlined text-3xl">cloud_upload</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p className="text-white text-lg font-bold">
+                  Drag and drop your CSV here
+                </p>
+                <p className="text-slate-400 text-sm">or</p>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="flex items-center gap-2 h-10 px-6 rounded-full bg-primary hover:bg-blue-600 text-white text-sm font-semibold tracking-wide transition-colors shadow-lg shadow-primary/20 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">folder_open</span>
+                <span>Browse files</span>
+              </button>
+            </>
+          )}
         </div>
         <input
           ref={fileInputRef}
