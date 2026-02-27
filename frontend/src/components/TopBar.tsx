@@ -2,9 +2,16 @@ import type { FileMetadata } from '../types';
 
 interface TopBarProps {
   fileMetadata: FileMetadata;
+  onUploadNew: () => void;
 }
 
-export default function TopBar({ fileMetadata }: TopBarProps) {
+export default function TopBar({ fileMetadata, onUploadNew }: TopBarProps) {
+  function handleUploadNew() {
+    if (window.confirm('This will clear your current session. Are you sure?')) {
+      onUploadNew();
+    }
+  }
+
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark px-6 py-4 z-20 shrink-0">
       <div className="flex items-center gap-4">
@@ -22,6 +29,7 @@ export default function TopBar({ fileMetadata }: TopBarProps) {
       <div className="flex gap-3">
         <button
           type="button"
+          onClick={handleUploadNew}
           className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 hover:bg-surface-dark text-slate-300 text-sm font-medium transition-colors border border-transparent hover:border-border-dark cursor-pointer"
         >
           <span className="material-symbols-outlined text-[18px]">upload_file</span>

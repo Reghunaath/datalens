@@ -5,12 +5,13 @@ import ResultsFeed from './ResultsFeed';
 
 interface AnalysisScreenProps {
   fileMetadata: FileMetadata;
+  onUploadNew: () => void;
 }
 
-export default function AnalysisScreen({ fileMetadata }: AnalysisScreenProps) {
+export default function AnalysisScreen({ fileMetadata, onUploadNew }: AnalysisScreenProps) {
   return (
     <div className="bg-background-dark text-slate-100 font-display min-h-screen flex flex-col overflow-hidden">
-      <TopBar fileMetadata={fileMetadata} />
+      <TopBar fileMetadata={fileMetadata} onUploadNew={onUploadNew} />
       <main className="flex-1 overflow-y-auto relative pb-32">
         <div className="flex justify-center w-full px-4 md:px-8 py-8">
           <ResultsFeed results={[]} />
