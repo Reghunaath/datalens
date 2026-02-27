@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DataLens - Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col items-center justify-center p-4 relative pb-28">
+<div class="w-full max-w-[640px] flex flex-col gap-8">
+<div class="flex flex-col items-center text-center gap-2">
+<div class="flex items-center gap-3 mb-2">
+<div class="flex items-center justify-center w-10 h-10 rounded bg-primary/20 dark:bg-primary/20 text-primary">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+</div>
+<h1 class="text-slate-900 dark:text-white text-4xl font-black tracking-[-0.033em]">
+                    DataLens
+                </h1>
+</div>
+<p class="text-slate-500 dark:text-[#9da6b9] text-lg font-normal leading-relaxed max-w-[480px]">
+                Upload a CSV and start exploring your data with plain English.
+            </p>
+</div>
+<div class="group relative flex flex-col items-center justify-center w-full">
+<div class="w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1a202e] hover:border-primary dark:hover:border-primary hover:bg-slate-100 dark:hover:bg-[#1f2636] transition-all duration-200 ease-in-out cursor-pointer py-16 px-8 flex flex-col items-center gap-6">
+<div class="w-16 h-16 rounded-full bg-slate-200 dark:bg-[#282e39] flex items-center justify-center text-slate-400 dark:text-slate-400 group-hover:scale-110 transition-transform duration-200">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<p class="text-slate-900 dark:text-white text-lg font-bold">
+                        Drag and drop your CSV here
+                    </p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">
+                        or
+                    </p>
+</div>
+<button class="flex items-center gap-2 h-10 px-6 rounded-full bg-primary hover:bg-blue-600 text-white text-sm font-semibold tracking-wide transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">folder_open</span>
+<span>Browse files</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">
+                Max file size: 10MB
+            </p>
+</div>
+</div>
+<div class="fixed bottom-0 w-full left-0 p-6 flex justify-center z-10 pointer-events-none select-none opacity-50 grayscale">
+<div class="w-full max-w-4xl bg-white dark:bg-[#151b28] border border-slate-200 dark:border-slate-800 shadow-2xl rounded-full p-2 pl-4 flex items-center gap-3">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-[#20293a] rounded-full">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-xs font-bold text-slate-600 dark:text-slate-300 tracking-wide">EDA MODE</span>
+</div>
+<div class="w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
+<input class="flex-1 bg-transparent border-none text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-0 text-base" disabled="" placeholder="Upload a CSV to start asking questions..." type="text"/>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-[#20293a] text-slate-400 dark:text-slate-600" disabled="">
+<span class="material-symbols-outlined text-xl">arrow_upward</span>
+</button>
+</div>
+</div>
+
+</body></html>
