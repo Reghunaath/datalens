@@ -15,7 +15,7 @@ export interface UploadResponse {
 
 export interface SummaryStat {
   value: string;
-  change: string;
+  change?: string;
   trend: 'up' | 'down' | 'neutral';
 }
 

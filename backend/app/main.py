@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.query import router as query_router
 from app.routes.upload import router as upload_router
 
 app = FastAPI(title="DataLens API")
@@ -14,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(upload_router)
+app.include_router(query_router)
 
 
 @app.get("/health")

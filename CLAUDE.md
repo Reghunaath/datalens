@@ -5,7 +5,7 @@
 - **Frontend:** React with TypeScript, Vite for bundling, TailwindCSS for styling.
 - **Backend:** Python 3.11+, FastAPI.
 - **Data Processing:** pandas, numpy.
-- **AI:** Google Gemini API (gemini-2.0-flash model) for code generation.
+- **AI:** Google Gemini API (gemini-3.1-pro-preview model) for code generation.
 - **Charting:** Recharts for frontend chart rendering.
 - **Icons:** Material Symbols Outlined (Google Fonts).
 - **Font:** Inter (Google Fonts).
