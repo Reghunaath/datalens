@@ -41,7 +41,7 @@ def execute_code(code: str, df: pd.DataFrame) -> tuple[list[dict], bool]:
         global_vars = {"pd": pd, "np": np, "json": json}
         local_vars: dict = {"df": df.copy()}
         try:
-            exec(code, global_vars, local_vars)  # noqa: S102
+            exec(code, global_vars, local_vars)  
             result_container["results"] = local_vars.get("results", [])
             result_container["dataset_modified"] = bool(local_vars.get("dataset_modified", False))
             result_container["df"] = local_vars["df"]

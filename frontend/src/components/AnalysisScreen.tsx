@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FileMetadata, ResultItem, QueryResponse } from '../types';
-import { sendQuery } from '../services/api';
+import { runEda, sendQuery } from '../services/api';
 import TopBar from './TopBar';
 import InputBar from './InputBar';
 import ResultsFeed from './ResultsFeed';
@@ -35,6 +35,27 @@ export default function AnalysisScreen({ fileMetadata, onUploadNew }: AnalysisSc
     }
   }
 
+  async function handleEda() {
+    setIsLoading(true);
+    try {
+      const response = await runEda();
+      const data: QueryResponse = response.data;
+      setResults((prev) => [...prev, ...data.results]);
+    } catch {
+      setResults((prev) => [
+        ...prev,
+        {
+          type: 'insight',
+          variant: 'warning',
+          title: 'EDA Error',
+          content: 'Something went wrong running the EDA. Please try again.',
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="bg-background-dark text-slate-100 font-display min-h-screen flex flex-col overflow-hidden">
       <TopBar fileMetadata={fileMetadata} onUploadNew={onUploadNew} />
@@ -43,7 +64,7 @@ export default function AnalysisScreen({ fileMetadata, onUploadNew }: AnalysisSc
           <ResultsFeed results={results} isLoading={isLoading} />
         </div>
       </main>
-      <InputBar disabled={false} isLoading={isLoading} onSubmit={handleSubmit} />
+      <InputBar disabled={false} isLoading={isLoading} onSubmit={handleSubmit} onEda={handleEda} />
     </div>
   );
 }

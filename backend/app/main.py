@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.download import router as download_router
+from app.routes.eda import router as eda_router
 from app.routes.query import router as query_router
 from app.routes.upload import router as upload_router
 
@@ -16,6 +18,8 @@ app.add_middleware(
 
 app.include_router(upload_router)
 app.include_router(query_router)
+app.include_router(eda_router)
+app.include_router(download_router)
 
 
 @app.get("/health")

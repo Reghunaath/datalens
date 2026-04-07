@@ -4,9 +4,10 @@ interface InputBarProps {
   disabled: boolean;
   isLoading?: boolean;
   onSubmit?: (query: string) => void;
+  onEda?: () => void;
 }
 
-export default function InputBar({ disabled, isLoading = false, onSubmit }: InputBarProps) {
+export default function InputBar({ disabled, isLoading = false, onSubmit, onEda }: InputBarProps) {
   const [value, setValue] = useState('');
 
   function handleSubmit() {
@@ -48,7 +49,9 @@ export default function InputBar({ disabled, isLoading = false, onSubmit }: Inpu
           ) : (
             <button
               type="button"
-              className="bg-primary/20 text-primary px-3 py-1.5 rounded-full text-xs font-bold tracking-wide flex items-center gap-1.5 shrink-0 select-none cursor-pointer hover:bg-primary/30 transition-colors"
+              onClick={onEda}
+              disabled={isLoading}
+              className="bg-primary/20 text-primary px-3 py-1.5 rounded-full text-xs font-bold tracking-wide flex items-center gap-1.5 shrink-0 select-none cursor-pointer hover:bg-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-[14px]">science</span>
               Run EDA
