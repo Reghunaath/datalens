@@ -1,6 +1,8 @@
 import type { ChartResult } from '../types';
 import ChartRenderer from './ChartRenderer';
 
+const PALETTE = ['#135bec', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
 interface ChartCardProps {
   result: ChartResult;
 }
@@ -10,6 +12,32 @@ const TREND_CONFIG = {
   down: { bg: 'bg-red-500/10', text: 'text-red-400', icon: 'trending_down' },
   neutral: { bg: 'bg-slate-500/10', text: 'text-slate-400', icon: 'remove' },
 } as const;
+
+function ChartLegend({ result }: { result: ChartResult }) {
+  const items =
+    result.chart_type === 'pie'
+      ? result.data.labels.map((label, i) => ({
+          label: String(label),
+          color: PALETTE[i % PALETTE.length],
+        }))
+      : result.data.datasets.map((ds, i) => ({
+          label: ds.label,
+          color: ds.colors?.[0] ?? PALETTE[i % PALETTE.length],
+        }));
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 mb-3">
+      {items.map((item) => (
+        <div key={item.label} className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+          <span className="text-xs text-slate-400">{item.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function ChartCard({ result }: ChartCardProps) {
   const stat = result.summary_stat;
@@ -36,6 +64,7 @@ export default function ChartCard({ result }: ChartCardProps) {
           </div>
         )}
       </div>
+      <ChartLegend result={result} />
       <div className="flex-1 min-h-0">
         <ChartRenderer result={result} />
       </div>

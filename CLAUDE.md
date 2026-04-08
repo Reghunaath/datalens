@@ -139,7 +139,11 @@ Refer to PRD Section 10 for detailed acceptance criteria for each step.
 - Settings page
 - User avatar or profile icon
 
-## 9. File Management
+## 9. Commit & Push Policy
+
+⚠️ **IMPORTANT:** After completing any code change, **do NOT commit or push** until the user has explicitly tested and confirmed the changes work. Wait for a "looks good" or explicit go-ahead before running `git commit` or `git push`.
+
+## 10. File Management
 
 - Keep `README.md` updated with setup instructions and how to run both frontend and backend.
 - `.env.example` in `backend/` must list `GEMINI_API_KEY=your_key_here`.

@@ -5,7 +5,6 @@ import {
   Bar,
   Cell,
   CartesianGrid,
-  Legend,
   LineChart,
   Line,
   Pie,
@@ -39,7 +38,6 @@ const TOOLTIP_STYLE = {
 };
 const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 12 };
 const AXIS_LINE = { stroke: GRID_COLOR };
-const LEGEND_STYLE = { color: AXIS_COLOR, fontSize: 12 };
 
 function toRechartsData(data: ChartData): Record<string, string | number>[] {
   return data.labels.map((label, i) => {
@@ -85,7 +83,6 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
           <XAxis {...xAxisProps} />
           <YAxis {...yAxisProps} />
           <Tooltip {...TOOLTIP_STYLE} />
-          <Legend wrapperStyle={LEGEND_STYLE} />
           {data.datasets.map((ds, i) => (
             <Bar key={ds.label} dataKey={ds.label} fill={getColor(i, ds.colors)} radius={[3, 3, 0, 0]} cursor="default" />
           ))}
@@ -103,7 +100,6 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
           <XAxis {...xAxisProps} />
           <YAxis {...yAxisProps} />
           <Tooltip {...TOOLTIP_STYLE} />
-          <Legend wrapperStyle={LEGEND_STYLE} />
           {data.datasets.map((ds, i) => (
             <Line key={ds.label} type="monotone" dataKey={ds.label} stroke={getColor(i, ds.colors)} strokeWidth={2} dot={false} />
           ))}
@@ -121,7 +117,6 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
           <XAxis {...xAxisProps} />
           <YAxis {...yAxisProps} />
           <Tooltip {...TOOLTIP_STYLE} />
-          <Legend wrapperStyle={LEGEND_STYLE} />
           {data.datasets.map((ds, i) => {
             const color = getColor(i, ds.colors);
             return (
@@ -147,7 +142,6 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
             ))}
           </Pie>
           <Tooltip {...TOOLTIP_STYLE} />
-          <Legend wrapperStyle={LEGEND_STYLE} />
         </PieChart>
       </ResponsiveContainer>
     );
