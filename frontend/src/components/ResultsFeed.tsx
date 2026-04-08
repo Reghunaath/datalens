@@ -12,9 +12,16 @@ interface ResultsFeedProps {
 }
 
 const DEFAULT_SIZES: Record<ResultItem['type'], { width: number; height: number }> = {
-  insight: { width: 420, height: 160 },
+  insight: { width: 420, height: 180 },
   chart: { width: 560, height: 420 },
   table: { width: 600, height: 320 },
+};
+
+// Heights used only for masonry column tracking (insight is auto-height so we use an estimate)
+const MASONRY_HEIGHTS: Record<ResultItem['type'], number> = {
+  insight: 180,
+  chart: 420,
+  table: 320,
 };
 
 const GAP = 24;
@@ -31,6 +38,10 @@ const RESIZE_HANDLES = {
 
 export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
   const [layouts, setLayouts] = useState<CardLayout[]>([]);
+  const [closedIds, setClosedIds] = useState<Set<string>>(new Set());
+
+  const closeCard = (id: string) =>
+    setClosedIds((prev) => new Set([...prev, id]));
 
   useEffect(() => {
     setLayouts((prev) => {
@@ -46,7 +57,9 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
 
       const next = [...prev];
       for (let i = prev.length; i < results.length; i++) {
-        const sizes = DEFAULT_SIZES[results[i].type];
+        const type = results[i].type;
+        const sizes = DEFAULT_SIZES[type];
+        const masonryH = MASONRY_HEIGHTS[type];
         // Place in the shorter column (masonry)
         const col = colY[0] <= colY[1] ? 0 : 1;
         next.push({
@@ -56,7 +69,7 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
           width: sizes.width,
           height: sizes.height,
         });
-        colY[col] += sizes.height + GAP;
+        colY[col] += masonryH + GAP;
       }
       return next;
     });
@@ -80,12 +93,15 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
     <div className="relative w-full" style={{ height: canvasHeight }}>
       {results.map((item, index) => {
         const layout = layouts[index];
-        if (!layout) return null;
+        if (!layout || closedIds.has(layout.id)) return null;
         return (
           <Rnd
             key={layout.id}
             className="rnd-card"
-            size={{ width: layout.width, height: layout.height }}
+            size={{
+              width: layout.width,
+              height: item.type === 'insight' ? 'auto' : layout.height,
+            }}
             position={{ x: layout.x, y: layout.y }}
             onDragStop={(_, d) => updateLayout(index, { x: d.x, y: d.y })}
             onResizeStop={(_, __, ref, ___, position) =>
@@ -99,12 +115,24 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
             dragHandleClassName="card-drag-handle"
             minWidth={280}
             minHeight={120}
-            enableResizing={{ bottom: true, right: true, bottomRight: true }}
+            enableResizing={
+              item.type === 'insight'
+                ? { right: true }
+                : { bottom: true, right: true, bottomRight: true }
+            }
             resizeHandleClasses={RESIZE_HANDLES}
           >
-            {item.type === 'insight' && <InsightCard result={item} />}
-            {item.type === 'table' && <TableCard result={item} />}
-            {item.type === 'chart' && <ChartCard result={item} />}
+            <div className={`relative group ${item.type !== 'insight' ? 'h-full' : ''}`}>
+              {item.type === 'insight' && <InsightCard result={item} />}
+              {item.type === 'table' && <TableCard result={item} />}
+              {item.type === 'chart' && <ChartCard result={item} />}
+              <button
+                className="absolute top-2 right-2 z-10 flex items-center justify-center text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => closeCard(layout.id)}
+              >
+                <span className="material-symbols-outlined text-[14px]">close</span>
+              </button>
+            </div>
           </Rnd>
         );
       })}

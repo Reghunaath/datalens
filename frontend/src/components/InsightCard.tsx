@@ -26,7 +26,7 @@ export default function InsightCard({ result }: InsightCardProps) {
   const config = VARIANT_CONFIG[result.variant];
 
   return (
-    <div className="card-drag-handle cursor-grab active:cursor-grabbing bg-surface-dark border border-border-dark rounded-xl p-6 flex gap-4 h-full">
+    <div className="card-drag-handle cursor-grab active:cursor-grabbing bg-surface-dark border border-border-dark rounded-xl p-6 flex gap-4">
       <div
         className="w-1 rounded-full self-stretch flex-shrink-0"
         style={{ backgroundColor: config.color }}
