@@ -6,11 +6,11 @@ interface TableCardProps {
 
 export default function TableCard({ result }: TableCardProps) {
   return (
-    <div className="bg-surface-dark border border-border-dark rounded-xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-border-dark">
+    <div className="bg-surface-dark border border-border-dark rounded-xl overflow-hidden h-full flex flex-col">
+      <div className="card-drag-handle cursor-grab active:cursor-grabbing px-6 py-4 border-b border-border-dark flex-shrink-0">
         <h3 className="text-base font-medium text-slate-300">{result.title}</h3>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-auto flex-1 min-h-0">
         <table className="w-full">
           <thead>
             <tr>

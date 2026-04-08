@@ -16,8 +16,8 @@ export default function ChartCard({ result }: ChartCardProps) {
   const trend = stat ? TREND_CONFIG[stat.trend] : null;
 
   return (
-    <div className="bg-surface-dark border border-border-dark rounded-xl p-6">
-      <div className="flex justify-between items-start mb-4">
+    <div className="bg-surface-dark border border-border-dark rounded-xl p-6 h-full flex flex-col">
+      <div className="card-drag-handle cursor-grab active:cursor-grabbing flex justify-between items-start mb-4">
         <div className="flex-1 min-w-0 mr-4">
           <h3 className="text-base font-medium text-slate-300">{result.title}</h3>
           {result.subtitle && (
@@ -36,7 +36,9 @@ export default function ChartCard({ result }: ChartCardProps) {
           </div>
         )}
       </div>
-      <ChartRenderer result={result} />
+      <div className="flex-1 min-h-0">
+        <ChartRenderer result={result} />
+      </div>
     </div>
   );
 }

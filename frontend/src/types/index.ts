@@ -62,6 +62,14 @@ export interface TableResult {
 
 export type ResultItem = InsightResult | ChartResult | TableResult;
 
+export interface CardLayout {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface QueryResponse {
   status: string;
   results: ResultItem[];

@@ -79,7 +79,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
   if (chart_type === 'bar') {
     const chartData = toRechartsData(data);
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 4, right: 16, bottom: xLabel ? 24 : 4, left: yLabel ? 24 : 4 }} barCategoryGap="20%">
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
           <XAxis {...xAxisProps} />
@@ -97,7 +97,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
   if (chart_type === 'line') {
     const chartData = toRechartsData(data);
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 4, right: 16, bottom: xLabel ? 24 : 4, left: yLabel ? 24 : 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
           <XAxis {...xAxisProps} />
@@ -115,7 +115,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
   if (chart_type === 'area') {
     const chartData = toRechartsData(data);
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 4, right: 16, bottom: xLabel ? 24 : 4, left: yLabel ? 24 : 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
           <XAxis {...xAxisProps} />
@@ -139,7 +139,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
       value: data.datasets[0]?.data[i] ?? 0,
     }));
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={110} paddingAngle={2}>
             {pieData.map((_, i) => (
@@ -161,7 +161,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
     }));
     const color = getColor(0, data.datasets[0]?.colors);
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 4, right: 16, bottom: xLabel ? 24 : 4, left: yLabel ? 24 : 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
           <XAxis dataKey="x" type="number" tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} />

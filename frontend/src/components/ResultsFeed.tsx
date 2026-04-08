@@ -1,4 +1,6 @@
-import type { ResultItem, ChartResult } from '../types';
+import { useState, useEffect } from 'react';
+import { Rnd } from 'react-rnd';
+import type { ResultItem, CardLayout } from '../types';
 import InsightCard from './InsightCard';
 import TableCard from './TableCard';
 import ChartCard from './ChartCard';
@@ -9,53 +11,88 @@ interface ResultsFeedProps {
   isLoading: boolean;
 }
 
+const DEFAULT_SIZES: Record<ResultItem['type'], { width: number; height: number }> = {
+  insight: { width: 420, height: 160 },
+  chart: { width: 560, height: 420 },
+  table: { width: 600, height: 320 },
+};
+
+const GAP = 24;
+
+const RESIZE_HANDLES = {
+  bottom: 'resize-handle',
+  right: 'resize-handle',
+  bottomRight: 'resize-handle',
+};
+
 export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
+  const [layouts, setLayouts] = useState<CardLayout[]>([]);
+
+  useEffect(() => {
+    setLayouts((prev) => {
+      if (results.length <= prev.length) return prev;
+      const next = [...prev];
+      for (let i = prev.length; i < results.length; i++) {
+        const sizes = DEFAULT_SIZES[results[i].type];
+        const last = next[next.length - 1];
+        const y = last ? last.y + last.height + GAP : 20;
+        next.push({ id: `card-${i}`, x: 20, y, width: sizes.width, height: sizes.height });
+      }
+      return next;
+    });
+  }, [results]);
+
+  const updateLayout = (index: number, updates: Partial<CardLayout>) => {
+    setLayouts((prev) => prev.map((l, i) => (i === index ? { ...l, ...updates } : l)));
+  };
+
   if (results.length === 0 && !isLoading) {
     return (
-      <div className="flex flex-col w-full max-w-[960px] gap-6">
-        <div className="flex items-center justify-center h-64 text-slate-500 text-sm">
-          Ask a question about your data to get started.
-        </div>
+      <div className="flex items-center justify-center h-64 text-slate-500 text-sm w-full">
+        Ask a question about your data to get started.
       </div>
     );
   }
 
-  const nodes: React.ReactNode[] = [];
-  let i = 0;
-
-  while (i < results.length) {
-    const item = results[i];
-
-    // Side-by-side layout: pair consecutive half-layout charts
-    if (item.type === 'chart' && item.layout === 'half') {
-      const next = results[i + 1];
-      if (next && next.type === 'chart' && next.layout === 'half') {
-        nodes.push(
-          <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ChartCard result={item as ChartResult} />
-            <ChartCard result={next as ChartResult} />
-          </div>
-        );
-        i += 2;
-        continue;
-      }
-    }
-
-    if (item.type === 'insight') {
-      nodes.push(<InsightCard key={i} result={item} />);
-    } else if (item.type === 'table') {
-      nodes.push(<TableCard key={i} result={item} />);
-    } else if (item.type === 'chart') {
-      nodes.push(<ChartCard key={i} result={item} />);
-    }
-
-    i += 1;
-  }
+  const canvasHeight = layouts.reduce((max, l) => Math.max(max, l.y + l.height + 60), 600);
 
   return (
-    <div className="flex flex-col w-full max-w-[960px] gap-6">
-      {nodes}
-      {isLoading && <LoadingIndicator />}
+    <div className="relative w-full" style={{ height: canvasHeight }}>
+      {results.map((item, index) => {
+        const layout = layouts[index];
+        if (!layout) return null;
+        return (
+          <Rnd
+            key={layout.id}
+            className="rnd-card"
+            size={{ width: layout.width, height: layout.height }}
+            position={{ x: layout.x, y: layout.y }}
+            onDragStop={(_, d) => updateLayout(index, { x: d.x, y: d.y })}
+            onResizeStop={(_, __, ref, ___, position) =>
+              updateLayout(index, {
+                width: ref.offsetWidth,
+                height: ref.offsetHeight,
+                ...position,
+              })
+            }
+            bounds="parent"
+            dragHandleClassName="card-drag-handle"
+            minWidth={280}
+            minHeight={120}
+            enableResizing={{ bottom: true, right: true, bottomRight: true }}
+            resizeHandleClasses={RESIZE_HANDLES}
+          >
+            {item.type === 'insight' && <InsightCard result={item} />}
+            {item.type === 'table' && <TableCard result={item} />}
+            {item.type === 'chart' && <ChartCard result={item} />}
+          </Rnd>
+        );
+      })}
+      {isLoading && (
+        <div className="absolute" style={{ left: 20, top: canvasHeight - 60 }}>
+          <LoadingIndicator />
+        </div>
+      )}
     </div>
   );
 }
