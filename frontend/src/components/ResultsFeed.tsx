@@ -18,6 +18,10 @@ const DEFAULT_SIZES: Record<ResultItem['type'], { width: number; height: number 
 };
 
 const GAP = 24;
+// Two-column masonry: col 0 starts at x=20, col 1 starts after the widest card + gap
+const COL_STARTS = [20, 650] as const;
+// Cards with x < this threshold are considered to be in col 0
+const COL_THRESHOLD = 400;
 
 const RESIZE_HANDLES = {
   bottom: 'resize-handle',
@@ -30,13 +34,29 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
 
   useEffect(() => {
     setLayouts((prev) => {
+      if (results.length === 0) return prev.length === 0 ? prev : [];
       if (results.length <= prev.length) return prev;
+
+      // Derive current column heights from already-placed cards
+      const colY: [number, number] = [20, 20];
+      for (const l of prev) {
+        const col = l.x < COL_THRESHOLD ? 0 : 1;
+        colY[col] = Math.max(colY[col], l.y + l.height + GAP);
+      }
+
       const next = [...prev];
       for (let i = prev.length; i < results.length; i++) {
         const sizes = DEFAULT_SIZES[results[i].type];
-        const last = next[next.length - 1];
-        const y = last ? last.y + last.height + GAP : 20;
-        next.push({ id: `card-${i}`, x: 20, y, width: sizes.width, height: sizes.height });
+        // Place in the shorter column (masonry)
+        const col = colY[0] <= colY[1] ? 0 : 1;
+        next.push({
+          id: `card-${i}`,
+          x: COL_STARTS[col],
+          y: colY[col],
+          width: sizes.width,
+          height: sizes.height,
+        });
+        colY[col] += sizes.height + GAP;
       }
       return next;
     });
