@@ -179,7 +179,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
 
   if (chart_type === 'scatter') {
     const scatterData = data.labels.map((label, i) => ({
-      x: i,
+      x: Number(label),
       y: data.datasets[0]?.data[i] ?? 0,
       name: String(label),
     }));
