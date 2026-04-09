@@ -41,10 +41,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
       setError('Please upload a CSV file.');
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setError('File size exceeds the 10MB limit.');
-      return;
-    }
+
 
     setIsUploading(true);
     try {
@@ -141,7 +138,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
 
       <div className="flex flex-col items-center gap-4">
         <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">
-          Max file size: 10MB
+          CSV files only
         </p>
       </div>
     </div>

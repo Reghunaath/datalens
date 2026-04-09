@@ -26,7 +26,7 @@ export default function InputBar({ disabled, isLoading = false, onSubmit, onEda 
     <div className={`fixed bottom-0 left-0 right-0 p-6 z-30 ${disabled ? 'pointer-events-none select-none opacity-50 grayscale' : ''}`}>
       <div className="max-w-[800px] mx-auto">
         <div
-          className={`${disabled ? 'bg-[#151b28] border-slate-800' : 'bg-surface-dark/90 backdrop-blur-xl border-border-dark ring-1 ring-white/10'} border p-2 rounded-full shadow-2xl flex items-center gap-2`}
+          className={`${disabled ? 'bg-[#151b28] border-slate-800' : 'bg-surface-dark/90 backdrop-blur-xl border-border-dark ring-1 ring-white/10'} border p-2 rounded-full flex items-center gap-2`}
         >
           <input
             type="text"
@@ -63,10 +63,10 @@ export default function InputBar({ disabled, isLoading = false, onSubmit, onEda 
             disabled={sendDisabled}
             className={`size-10 rounded-full flex items-center justify-center shrink-0 transition-all ${
               isLoading
-                ? 'bg-primary cursor-not-allowed shadow-[0_0_15px_rgba(19,91,236,0.4)]'
+                ? 'bg-primary cursor-not-allowed '
                 : sendDisabled
                 ? 'bg-[#20293a] text-slate-600 cursor-not-allowed opacity-50'
-                : 'bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(19,91,236,0.4)] cursor-pointer'
+                : 'bg-primary hover:bg-primary/90 text-white  cursor-pointer'
             }`}
           >
             {isLoading ? (

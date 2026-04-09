@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import type { ResultItem, CardLayout } from '../types';
 import InsightCard from './InsightCard';
 import TableCard from './TableCard';
 import ChartCard from './ChartCard';
+import ZoomControl from './ZoomControl';
 
 interface ResultsFeedProps {
   results: ResultItem[];
@@ -33,17 +34,41 @@ const RESIZE_HANDLES = {
   bottomRight: 'resize-handle',
 };
 
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 2;
+const ZOOM_STEP = 0.1;
+
 export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [layouts, setLayouts] = useState<CardLayout[]>([]);
   const [closedIds, setClosedIds] = useState<Set<string>>(new Set());
+  const [zoom, setZoom] = useState(1);
+
+  const zoomIn  = useCallback(() => setZoom(z => Math.min(MAX_ZOOM, parseFloat((z + ZOOM_STEP).toFixed(2)))), []);
+  const zoomOut = useCallback(() => setZoom(z => Math.max(MIN_ZOOM, parseFloat((z - ZOOM_STEP).toFixed(2)))), []);
+  const resetZoom = useCallback(() => setZoom(1), []);
 
   const closeCard = (id: string) =>
     setClosedIds((prev) => new Set([...prev, id]));
 
   useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(); }
+        if (e.key === '-')                  { e.preventDefault(); zoomOut(); }
+        if (e.key === '0')                  { e.preventDefault(); resetZoom(); }
+      }
+    }
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [zoomIn, zoomOut, resetZoom]);
+
+  useEffect(() => {
     setLayouts((prev) => {
-      if (results.length === 0) return prev.length === 0 ? prev : [];
+      if (results.length === 0) {
+        if (prev.length !== 0) setZoom(1);
+        return prev.length === 0 ? prev : [];
+      }
       if (results.length <= prev.length) return prev;
 
       // Center the two-column block within the actual container width
@@ -87,59 +112,78 @@ export default function ResultsFeed({ results, isLoading }: ResultsFeedProps) {
   const canvasHeight = layouts.reduce((max, l) => Math.max(max, l.y + l.height + 60), 600);
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full relative">
       {results.length === 0 ? (
         <div className="flex items-center justify-center h-64 text-slate-500 text-sm">
           Ask a question about your data to get started.
         </div>
       ) : (
-        <div className="relative w-full" style={{ height: canvasHeight }}>
-          {results.map((item, index) => {
-            const layout = layouts[index];
-            if (!layout || closedIds.has(layout.id)) return null;
-            return (
-              <Rnd
-                key={layout.id}
-                className="rnd-card"
-                size={{
-                  width: layout.width,
-                  height: item.type === 'insight' ? 'auto' : layout.height,
-                }}
-                position={{ x: layout.x, y: layout.y }}
-                onDragStop={(_, d) => updateLayout(index, { x: d.x, y: d.y })}
-                onResizeStop={(_, __, ref, ___, position) =>
-                  updateLayout(index, {
-                    width: ref.offsetWidth,
-                    height: ref.offsetHeight,
-                    ...position,
-                  })
-                }
-                bounds="parent"
-                dragHandleClassName="card-drag-handle"
-                minWidth={280}
-                minHeight={120}
-                enableResizing={
-                  item.type === 'insight'
-                    ? { right: true }
-                    : { bottom: true, right: true, bottomRight: true }
-                }
-                resizeHandleClasses={RESIZE_HANDLES}
-              >
-                <div className={`relative group ${item.type !== 'insight' ? 'h-full' : ''}`}>
-                  {item.type === 'insight' && <InsightCard result={item} />}
-                  {item.type === 'table' && <TableCard result={item} />}
-                  {item.type === 'chart' && <ChartCard result={item} />}
-                  <button
-                    className="absolute top-2 right-2 z-10 flex items-center justify-center text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => closeCard(layout.id)}
+        <>
+          {/* Height shim — reserves scroll space matching scaled canvas height */}
+          <div style={{ height: canvasHeight * zoom, width: '100%', pointerEvents: 'none' }} />
+          {/* Scale wrapper */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: `${100 / zoom}%`,
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              transition: 'transform 150ms ease',
+            }}
+          >
+            <div className="relative w-full" style={{ height: canvasHeight }}>
+              {results.map((item, index) => {
+                const layout = layouts[index];
+                if (!layout || closedIds.has(layout.id)) return null;
+                return (
+                  <Rnd
+                    key={layout.id}
+                    className="rnd-card"
+                    size={{
+                      width: layout.width,
+                      height: item.type === 'insight' ? 'auto' : layout.height,
+                    }}
+                    position={{ x: layout.x, y: layout.y }}
+                    scale={zoom}
+                    onDragStop={(_, d) => updateLayout(index, { x: d.x, y: d.y })}
+                    onResizeStop={(_, __, ref, ___, position) =>
+                      updateLayout(index, {
+                        width: ref.offsetWidth,
+                        height: ref.offsetHeight,
+                        ...position,
+                      })
+                    }
+                    bounds="parent"
+                    dragHandleClassName="card-drag-handle"
+                    minWidth={280}
+                    minHeight={120}
+                    enableResizing={
+                      item.type === 'insight'
+                        ? { right: true }
+                        : { bottom: true, right: true, bottomRight: true }
+                    }
+                    resizeHandleClasses={RESIZE_HANDLES}
                   >
-                    <span className="material-symbols-outlined text-[14px]">close</span>
-                  </button>
-                </div>
-              </Rnd>
-            );
-          })}
-        </div>
+                    <div className={`relative group ${item.type !== 'insight' ? 'h-full' : ''}`}>
+                      {item.type === 'insight' && <InsightCard result={item} />}
+                      {item.type === 'table' && <TableCard result={item} />}
+                      {item.type === 'chart' && <ChartCard result={item} />}
+                      <button
+                        className="absolute top-2 right-2 z-10 flex items-center justify-center text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => closeCard(layout.id)}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </div>
+                  </Rnd>
+                );
+              })}
+            </div>
+          </div>
+          <ZoomControl zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetZoom} />
+        </>
       )}
     </div>
   );
