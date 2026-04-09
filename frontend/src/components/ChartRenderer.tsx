@@ -3,7 +3,6 @@ import {
   Area,
   BarChart,
   Bar,
-  Cell,
   CartesianGrid,
   LineChart,
   Line,
@@ -12,10 +11,12 @@ import {
   ResponsiveContainer,
   Scatter,
   ScatterChart,
+  Sector,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import type { PieLabelRenderProps } from 'recharts';
 import type { ChartResult, ChartData } from '../types';
 
 interface ChartRendererProps {
@@ -38,6 +39,29 @@ const TOOLTIP_STYLE = {
 };
 const AXIS_TICK = { fill: AXIS_COLOR, fontSize: 12 };
 const AXIS_LINE = { stroke: GRID_COLOR };
+
+const RADIAN = Math.PI / 180;
+
+function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) {
+  if (cx == null || cy == null || innerRadius == null || outerRadius == null) return null;
+  const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5;
+  const ncx = Number(cx);
+  const ncy = Number(cy);
+  const x = ncx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+  const y = ncy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+  const pct = (percent ?? 0) * 100;
+  if (pct < 5) return null; // skip label if slice is too small
+  return (
+    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
+      {`${pct.toFixed(0)}%`}
+    </text>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function PieSlice(props: any) {
+  return <Sector {...props} fill={PALETTE[props.index % PALETTE.length]} />;
+}
 
 function toRechartsData(data: ChartData): Record<string, string | number>[] {
   return data.labels.map((label, i) => {
@@ -136,11 +160,17 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
     return (
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={110} paddingAngle={2}>
-            {pieData.map((_, i) => (
-              <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
-            ))}
-          </Pie>
+          <Pie
+            data={pieData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={110}
+            labelLine={false}
+            label={renderPieLabel}
+            shape={<PieSlice />}
+          />
           <Tooltip {...TOOLTIP_STYLE} />
         </PieChart>
       </ResponsiveContainer>

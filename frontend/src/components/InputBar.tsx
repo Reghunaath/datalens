@@ -62,14 +62,18 @@ export default function InputBar({ disabled, isLoading = false, onSubmit, onEda 
             onClick={handleSubmit}
             disabled={sendDisabled}
             className={`size-10 rounded-full flex items-center justify-center shrink-0 transition-all ${
-              sendDisabled
+              isLoading
+                ? 'bg-primary cursor-not-allowed shadow-[0_0_15px_rgba(19,91,236,0.4)]'
+                : sendDisabled
                 ? 'bg-[#20293a] text-slate-600 cursor-not-allowed opacity-50'
                 : 'bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(19,91,236,0.4)] cursor-pointer'
             }`}
           >
-            <span className="material-symbols-outlined text-[20px]">
-              {isLoading ? 'hourglass_empty' : 'arrow_upward'}
-            </span>
+            {isLoading ? (
+              <div className="size-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+            ) : (
+              <span className="material-symbols-outlined text-[20px]">arrow_upward</span>
+            )}
           </button>
         </div>
         <div className="text-center mt-2">
