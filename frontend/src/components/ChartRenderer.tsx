@@ -188,8 +188,8 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 4, right: 16, bottom: xLabel ? 24 : 4, left: yLabel ? 24 : 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
-          <XAxis dataKey="x" type="number" tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} />
-          <YAxis dataKey="y" type="number" {...yAxisProps} />
+          <XAxis dataKey="x" type="number" tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} domain={['auto', 'auto']} />
+          <YAxis dataKey="y" type="number" {...yAxisProps} domain={['auto', 'auto']} />
           <Tooltip {...TOOLTIP_STYLE} cursor={{ strokeDasharray: '3 3' }} />
           <Scatter data={scatterData} fill={color} />
         </ScatterChart>
