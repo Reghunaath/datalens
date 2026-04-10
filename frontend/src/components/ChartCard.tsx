@@ -1,7 +1,11 @@
 import type { ChartResult } from '../types';
 import ChartRenderer from './ChartRenderer';
 
-const PALETTE = ['#135bec', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+const PALETTE = [
+  '#135bec', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899',
+  '#06b6d4', '#f97316', '#84cc16', '#e11d48', '#a855f7',
+  '#14b8a6', '#eab308', '#3b82f6', '#ef4444', '#22c55e',
+];
 
 interface ChartCardProps {
   result: ChartResult;
