@@ -1,3 +1,4 @@
+import { downloadCsv } from '../services/api';
 import type { FileMetadata } from '../types';
 
 interface TopBarProps {
@@ -6,6 +7,16 @@ interface TopBarProps {
 }
 
 export default function TopBar({ fileMetadata, onUploadNew }: TopBarProps) {
+  async function handleDownload() {
+    const response = await downloadCsv();
+    const url = URL.createObjectURL(response.data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modified_data.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   function handleUploadNew() {
     if (window.confirm('This will clear your current session. Are you sure?')) {
       onUploadNew();
@@ -37,6 +48,7 @@ export default function TopBar({ fileMetadata, onUploadNew }: TopBarProps) {
         </button>
         <button
           type="button"
+          onClick={handleDownload}
           className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 hover:bg-surface-dark text-slate-300 text-sm font-medium transition-colors border border-transparent hover:border-border-dark cursor-pointer"
         >
           <span className="material-symbols-outlined text-[18px]">download</span>

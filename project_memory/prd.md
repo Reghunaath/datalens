@@ -117,7 +117,7 @@ The interface must be approachable enough for the least technical user in this g
 | HTTP client | Axios |
 | Backend | Python 3.11+, FastAPI |
 | Data processing | pandas, numpy |
-| LLM | Google Gemini API (gemini-2.0-flash model) |
+| LLM | Google Gemini API (gemini-3.1-pro-preview model) |
 | Session storage | In-memory (Python dict) |
 | CORS | fastapi-cors middleware (allow localhost origins) |
 

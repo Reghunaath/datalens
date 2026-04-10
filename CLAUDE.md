@@ -5,7 +5,7 @@
 - **Frontend:** React with TypeScript, Vite for bundling, TailwindCSS for styling.
 - **Backend:** Python 3.11+, FastAPI.
 - **Data Processing:** pandas, numpy.
-- **AI:** Google Gemini API (gemini-2.0-flash model) for code generation.
+- **AI:** Google Gemini API (gemini-3.1-pro-preview model) for code generation.
 - **Charting:** Recharts for frontend chart rendering.
 - **Icons:** Material Symbols Outlined (Google Fonts).
 - **Font:** Inter (Google Fonts).
@@ -139,7 +139,11 @@ Refer to PRD Section 10 for detailed acceptance criteria for each step.
 - Settings page
 - User avatar or profile icon
 
-## 9. File Management
+## 9. Commit & Push Policy
+
+⚠️ **IMPORTANT:** After completing any code change, **do NOT commit or push** until the user has explicitly tested and confirmed the changes work. Wait for a "looks good" or explicit go-ahead before running `git commit` or `git push`.
+
+## 10. File Management
 
 - Keep `README.md` updated with setup instructions and how to run both frontend and backend.
 - `.env.example` in `backend/` must list `GEMINI_API_KEY=your_key_here`.

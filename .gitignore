@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 dist/
 .venv/
+.claude/
+.playwright-mcp/

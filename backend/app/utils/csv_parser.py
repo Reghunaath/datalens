@@ -3,7 +3,6 @@ from io import BytesIO
 import pandas as pd
 from fastapi import UploadFile
 
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_MEMORY_MB = 500
 
 
@@ -15,9 +14,6 @@ def validate_file(file: UploadFile) -> str | None:
 
 
 async def validate_size(contents: bytes) -> str | None:
-    """Return an error message string, or None if valid."""
-    if len(contents) > MAX_FILE_SIZE:
-        return "File size exceeds the 10MB limit."
     return None
 
 
