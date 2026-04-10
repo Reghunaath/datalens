@@ -179,7 +179,7 @@ export default function ChartRenderer({ result }: ChartRendererProps) {
             nameKey="name"
             cx="50%"
             cy="50%"
-            outerRadius={110}
+            outerRadius="80%"
             labelLine={false}
             label={renderPieLabel}
             shape={<PieSlice />}
